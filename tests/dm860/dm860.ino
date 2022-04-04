@@ -5,13 +5,14 @@
 #define PIN_DIR 5
 #define PIN_PUL 11
 
-GStepper2<STEPPER2WIRE> stepper(400, PIN_PUL, PIN_DIR, PIN_ENA);
+#define STEP_PER_TURNAROUND 400
+
+GStepper2<STEPPER2WIRE> stepper(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 
 void setup()
 {
     stepper.setMaxSpeed(1200);     // скорость движения к цели
     stepper.setAcceleration(400); // ускорение
-    stepper.setTarget(800);       // цель
 
     stepper.invertEn(true);
     stepper.enable();
@@ -24,15 +25,7 @@ bool dir = 1;
 
 void loop()
 {
-    /*stepper.tick();   // мотор асинхронно крутится тут
-    // если приехали
-    if (stepper.ready())
-    {
-        dir = !dir;   // разворачиваем
-        stepper.setTarget(dir * 800); // едем в другую сторону
-    }*/
-
-    for(int i = 0; i < 400; ++i)
+    for(int i = 0; i < STEP_PER_TURNAROUND; ++i)
     {
         stepper.step();
         delay(10);
