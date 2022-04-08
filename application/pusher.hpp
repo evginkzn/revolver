@@ -7,6 +7,8 @@
   #include <WProgram.h>
 #endif
 
+#include <Callback.h>
+
 class Pusher
 {
 private:
@@ -31,11 +33,19 @@ public:
 
     void make_push();
 
+    void attachOnPushedEvent(const Slot<bool>& slot)
+    {
+        onPushed_.attach(slot);
+    }
+
+
 private:
     unsigned long time_counter_;
     bool in_action_;
 
     State state_;
+
+    Signal<bool> onPushed_;
 };
 
 #endif // ! PUSHER_HPP
