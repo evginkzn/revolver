@@ -11,7 +11,9 @@ Pusher::Pusher()
 
 void Pusher::init()
 {
-
+    #ifdef DEBUG
+    Serial.println("Pusher initialized");
+    #endif // ! DEBUG
 }
 
 void Pusher::tick()

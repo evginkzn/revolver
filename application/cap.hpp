@@ -1,6 +1,12 @@
 #ifndef CAP_HPP
 #define CAP_HPP
 
+#if ARDUINO >= 100
+  #include <Arduino.h>
+#else
+  #include <WProgram.h>
+#endif
+
 #include <Callback.h>
 
 class Cap
