@@ -17,6 +17,7 @@
 #define FIRST_TUBE_SENSOR_PIN 6
 #define TUBE_CENTER_SENSOR_PIN 7
 
+static const char version[] = "0.1";
 
 GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 
@@ -32,6 +33,12 @@ void setup()
 {
     #ifdef DEBUG
     Serial.begin(9600);
+    #endif // ! DEBUG
+
+    #ifdef DEBUG
+    Serial.print("Firmware version: ");
+    Serial.print(version);
+    Serial.println("");
     #endif // ! DEBUG
 
     step_motor_configure();
