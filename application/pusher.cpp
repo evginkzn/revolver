@@ -4,6 +4,7 @@
 
 Pusher::Pusher()
     : in_action_(false)
+    , state_(StateIdle)
 {
 
 }

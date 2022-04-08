@@ -6,6 +6,7 @@
 
 #include "revolver.hpp"
 #include "pusher.hpp"
+#include "cap.hpp"
 
 #define PIN_ENA 4
 #define PIN_DIR 5
@@ -22,6 +23,7 @@ GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_EN
 static Revolver revolver(step_motor, STEP_PER_TURNAROUND
                         , FIRST_TUBE_SENSOR_PIN, TUBE_CENTER_SENSOR_PIN);
 static Pusher pusher;
+static Cap cap;
 
 static uint8_t tube_target_ = 0;
 static uint8_t current_tube_ = 0;
@@ -36,6 +38,7 @@ void setup()
 
     revolver.init();
     pusher.init();
+    cap.init();
 
     FunctionSlot<uint8_t> selected_event_slot(tube_selected_event);
     revolver.attachOnSelectEvent(selected_event_slot);
@@ -70,6 +73,7 @@ void loop()
     revolver.tick();
     step_motor.tick();
     pusher.tick();
+    cap.tick();
 }
 
 void step_motor_configure()
@@ -92,4 +96,18 @@ void tube_selected_event(uint8_t selected_tube)
     #endif // ! DEBUG
 
     pusher.make_push();
+}
+
+void cap_open()
+{
+    #ifdef DEBUG
+    Serial.println("Cap opened");
+    #endif // ! DEBUG
+}
+
+void cap_close()
+{
+    #ifdef DEBUG
+    Serial.println("Cap closed");
+    #endif // ! DEBUG
 }

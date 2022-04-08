@@ -8,6 +8,7 @@ Revolver::Revolver(GStepper2<STEPPER2WIRE>& motor, uint16_t steps
     , steps_(steps)
     , first_tube_sensor_pin_(first_tube_sensor_pin)
     , center_sensor_pin_(center_sensor_pin)
+    , state_(StateIdle)
 {
 
 }
@@ -99,7 +100,7 @@ void Revolver::select_tube(uint8_t tube)
     Serial.println(path2);
     #endif // ! DEBUG
 
-    delta_deg = (abs(path1) > abs(path2)) ? abs(path2) : abs(path1);
+    delta_deg = (fabs(path1) > fabs(path2)) ? fabs(path2) : fabs(path1);
 
     #ifdef DEBUG
     Serial.println("So, shortest path: ");
@@ -109,7 +110,7 @@ void Revolver::select_tube(uint8_t tube)
     need_steps = (int32_t)(delta_deg / (360.0 / (float)steps_));
 
     
-    if (abs(path2) < abs(path1))
+    if (fabs(path2) < fabs(path1))
     {
         if (path1 > 0)
         {
