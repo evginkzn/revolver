@@ -8,6 +8,7 @@
 #endif
 
 #include <Callback.h>
+#include <Servo.h>
 
 class Cap
 {
@@ -26,7 +27,7 @@ public:
     ~Cap(){}
 
 public:
-    void init();
+    void init(int servo1_pin, int servo2_pin);
     void tick();
 
     void open();
@@ -55,6 +56,9 @@ private:
 
     Signal<bool> onOpened_;
     Signal<bool> onClosed_;
+
+    Servo servo1_;
+    Servo servo2_;
 };
 
 #endif // ! CAP_HPP

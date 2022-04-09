@@ -9,8 +9,14 @@ Pusher::Pusher()
 
 }
 
-void Pusher::init()
-{
+void Pusher::init(int servo1_pin, int servo2_pin)
+{   
+    servo1_.attach(servo1_pin);
+    servo2_.attach(servo2_pin);
+
+    servo1_.write(120);
+    servo2_.write(120);
+
     #ifdef DEBUG
     Serial.println("Pusher initialized");
     #endif // ! DEBUG
@@ -31,7 +37,7 @@ void Pusher::tick()
             #ifdef DEBUG
             Serial.println("First servo action");
             #endif // ! DEBUG
-            //servo1.write(deg);
+            servo1_.write(120);
             time_counter_ = millis();
             state_ = StateSecondServoAction;
         }
@@ -44,7 +50,7 @@ void Pusher::tick()
                 #ifdef DEBUG
                 Serial.println("Second servo action");
                 #endif // ! DEBUG
-                //servo2.write(deg);
+                servo2_.write(0);
                 time_counter_ = millis();
                 state_ = StateSecondServoBack;
             }
@@ -58,7 +64,7 @@ void Pusher::tick()
                 #ifdef DEBUG
                 Serial.println("Second servo back");
                 #endif // ! DEBUG
-                //servo2.write(deg);
+                servo2_.write(120);
                 time_counter_ = millis();
                 state_ = StateFirstServoBack;
             }
@@ -72,7 +78,7 @@ void Pusher::tick()
                 #ifdef DEBUG
                 Serial.println("First servo back");
                 #endif // ! DEBUG
-                //servo1.write(deg);
+                servo1_.write(0);
                 time_counter_ = millis();
                 state_ = StateIdle;
                 in_action_ = false;

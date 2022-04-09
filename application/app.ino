@@ -17,7 +17,13 @@
 #define FIRST_TUBE_SENSOR_PIN 6
 #define TUBE_CENTER_SENSOR_PIN 7
 
-static const char version[] = "0.1";
+#define PUSHER_FIRST_SERVO_PIN 2
+#define PUSHER_SECOND_SERVO_PIN 3
+
+#define CAP_FIRST_SERVO_PIN 8
+#define CAP_SECOND_SERVO_PIN 9
+
+static const char version[] = "0.2";
 
 GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 
@@ -44,8 +50,8 @@ void setup()
     step_motor_configure();
 
     revolver.init();
-    pusher.init();
-    cap.init();
+    pusher.init(PUSHER_FIRST_SERVO_PIN, PUSHER_SECOND_SERVO_PIN);
+    cap.init(CAP_FIRST_SERVO_PIN, CAP_SECOND_SERVO_PIN);
 
     FunctionSlot<uint8_t> selected_event_slot(tube_selected_event);
     revolver.attachOnSelectEvent(selected_event_slot);
@@ -55,14 +61,14 @@ void setup()
     #endif // ! DEBUG
 
 }
-
-uint8_t tubes_selecting_test_targets[10] = { 3, 11, 14, 2, 8, 0, 6, 2, 11, 0 };
+//                                          90  330  Error   60  270   0  180  60  330  0
+uint8_t tubes_selecting_test_targets[10] = { 3,  11,    14,   2,   8,  0,   6,  2, 11,  0 };
 unsigned long select_period_counter = 0;
 uint8_t selector = 0;
 
 void loop()
 {
-    if (millis() - select_period_counter > 15000)
+    if (millis() - select_period_counter > 3000)
     {
         select_period_counter = millis();
         if (revolver.state() == Revolver::StateIdle)
@@ -85,8 +91,8 @@ void loop()
 
 void step_motor_configure()
 {
-    step_motor.setMaxSpeed(6400);
-    step_motor.setAcceleration(6400);
+    step_motor.setMaxSpeed(12000);
+    step_motor.setAcceleration(9000);
     step_motor.invertEn(true);
 
     #ifdef DEBUG

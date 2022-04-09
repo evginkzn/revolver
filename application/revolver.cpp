@@ -18,7 +18,7 @@ void Revolver::init()
     pinMode(first_tube_sensor_pin_, INPUT);
     pinMode(center_sensor_pin_, INPUT);
 
-    //find_first_tube();
+    find_first_tube();
 }
 
 void Revolver::tick()
@@ -108,7 +108,7 @@ void Revolver::select_tube(uint8_t tube)
     #endif // ! DEBUG
 
     need_steps = (int32_t)(delta_deg / (360.0 / (float)steps_));
-
+    need_steps *= 50;
     
     if (fabs(path2) < fabs(path1))
     {
@@ -151,7 +151,9 @@ bool Revolver::find_first_tube()
 
     motor_.enable();
 
-    for(int i = 0; i < steps_ + (steps_ / 2); ++i)
+    int steps_via_reducer = steps_ * 50;
+
+    for(int i = 0; i < (steps_via_reducer) + (steps_via_reducer / 2); ++i)
     {
         motor_.step();
 

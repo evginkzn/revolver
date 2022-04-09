@@ -7,6 +7,7 @@
   #include <WProgram.h>
 #endif
 
+#include <Servo.h>
 #include <Callback.h>
 
 class Pusher
@@ -26,7 +27,7 @@ public:
     ~Pusher(){}
 
 public:
-    void init();
+    void init(int servo1_pin, int servo2_pin);
     bool in_action() const { return in_action_; }
 
     void tick();
@@ -46,6 +47,9 @@ private:
     State state_;
 
     Signal<bool> onPushed_;
+
+    Servo servo1_;
+    Servo servo2_;
 };
 
 #endif // ! PUSHER_HPP
