@@ -13,8 +13,8 @@ void Cap::init(int servo1_pin, int servo2_pin)
     servo1_.attach(servo1_pin);
     servo2_.attach(servo2_pin);
 
-    servo1_.write(0);
-    servo2_.write(0);
+    servo1_.write(10);//// -->>100
+    servo2_.write(75); /// ->> 180
 
     #ifdef DEBUG
     Serial.println("Cap initialized");
@@ -36,7 +36,7 @@ void Cap::tick()
             #ifdef DEBUG
             Serial.println("Cap::First servo action");
             #endif // ! DEBUG
-            servo1_.write(90);
+            servo1_.write(100);
             time_counter_ = millis();
             state_ = StateSecondServoAction;
         }
@@ -50,7 +50,7 @@ void Cap::tick()
                 Serial.println("Cap::Second servo action");
                 Serial.println("Cap:: opened");
                 #endif // ! DEBUG
-                servo2_.write(90);
+                servo2_.write(180);
                 time_counter_ = millis();
                 state_ = StateIdle;
                 is_opened_ = true;
@@ -64,7 +64,7 @@ void Cap::tick()
             #ifdef DEBUG
             Serial.println("Cap::Second servo back");
             #endif // ! DEBUG
-            servo2_.write(0);
+            servo2_.write(10);
             time_counter_ = millis();
             state_ = StateFirstServoBack;
         }
@@ -77,7 +77,7 @@ void Cap::tick()
                 #ifdef DEBUG
                 Serial.println("Cap::First servo back");
                 #endif // ! DEBUG
-                servo1_.write(0);
+                servo1_.write(75);
                 time_counter_ = millis();
                 state_ = StateIdle;
                 in_action_ = false;
