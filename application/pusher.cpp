@@ -14,8 +14,8 @@ void Pusher::init(int servo1_pin, int servo2_pin)
     servo1_.attach(servo1_pin);
     servo2_.attach(servo2_pin);
 
-    servo1_.write(120);
-    servo2_.write(120);
+    servo1_.write(120); // подниматель
+    servo2_.write(0); // нижний
 
     #ifdef DEBUG
     Serial.println("Pusher initialized");
@@ -37,7 +37,7 @@ void Pusher::tick()
             #ifdef DEBUG
             Serial.println("First servo action");
             #endif // ! DEBUG
-            servo1_.write(120);
+            servo1_.write(0);
             time_counter_ = millis();
             state_ = StateSecondServoAction;
         }
@@ -45,12 +45,12 @@ void Pusher::tick()
 
         case StateSecondServoAction:
         {
-            if (millis() - time_counter_ > 500)
+            if (millis() - time_counter_ > 1500)
             {
                 #ifdef DEBUG
                 Serial.println("Second servo action");
                 #endif // ! DEBUG
-                servo2_.write(0);
+                servo2_.write(160);
                 time_counter_ = millis();
                 state_ = StateSecondServoBack;
             }
@@ -59,12 +59,12 @@ void Pusher::tick()
 
         case StateSecondServoBack:
         {
-            if (millis() - time_counter_ > 600)
+            if (millis() - time_counter_ > 1600)
             {
                 #ifdef DEBUG
                 Serial.println("Second servo back");
                 #endif // ! DEBUG
-                servo2_.write(120);
+                servo2_.write(0);
                 time_counter_ = millis();
                 state_ = StateFirstServoBack;
             }
@@ -73,17 +73,18 @@ void Pusher::tick()
 
         case StateFirstServoBack:
         {
-            if (millis() - time_counter_ > 700)
+            if (millis() - time_counter_ > 1700)
             {
                 #ifdef DEBUG
                 Serial.println("First servo back");
                 #endif // ! DEBUG
-                servo1_.write(0);
+                servo1_.write(120);
                 time_counter_ = millis();
                 state_ = StateIdle;
                 in_action_ = false;
                 #ifdef DEBUG
                 Serial.println("Pushed");
+                onPushed_.fire(true);
                 #endif // ! DEBUG
             }
         }
