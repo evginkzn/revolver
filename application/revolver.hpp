@@ -22,7 +22,7 @@ public:
 
 public:
     Revolver(GStepper2<STEPPER2WIRE>& motor, uint16_t steps
-            , uint8_t first_tube_sensor_pin, uint8_t center_sensor_pin);
+            , int first_tube_sensor_pin, int center_sensor_pin);
     ~Revolver(){}
 
 public:
@@ -38,8 +38,9 @@ public:
         onSelect_.attach(slot);
     }
 
-private:
     bool find_first_tube();
+
+private:
     bool find_tube_center();
 
 private:
@@ -48,8 +49,8 @@ private:
     State state_;
     uint16_t steps_;
 
-    uint8_t first_tube_sensor_pin_;
-    uint8_t center_sensor_pin_;
+    int first_tube_sensor_pin_;
+    int center_sensor_pin_;
 
     float current_deg_ = 0;
     uint8_t current_tube_ = 0;

@@ -3,22 +3,19 @@
 #define DEBUG
 
 Revolver::Revolver(GStepper2<STEPPER2WIRE>& motor, uint16_t steps
-            , uint8_t first_tube_sensor_pin, uint8_t center_sensor_pin)
+            , int first_tube_sensor_pin, int center_sensor_pin)
     : motor_(motor)
     , steps_(steps)
     , first_tube_sensor_pin_(first_tube_sensor_pin)
     , center_sensor_pin_(center_sensor_pin)
     , state_(StateIdle)
 {
-
 }
 
 void Revolver::init()
 {
     pinMode(first_tube_sensor_pin_, INPUT);
     pinMode(center_sensor_pin_, INPUT);
-
-    find_first_tube();
 }
 
 void Revolver::tick()
@@ -43,6 +40,7 @@ void Revolver::tick()
         {
             if (motor_.ready())
             {
+                find_tube_center();
                 motor_.disable();
                 state_ = StateIdle;
                 onSelect_.fire(current_tube_);
@@ -151,28 +149,23 @@ bool Revolver::find_first_tube()
 
     motor_.enable();
 
-    int steps_via_reducer = steps_ * 50;
-
-    for(int i = 0; i < (steps_via_reducer) + (steps_via_reducer / 2); ++i)
+    while(1)
     {
-        motor_.step();
+        motor_.setSpeed(6400);
+        motor_.tick();
 
         if (digitalRead(first_tube_sensor_pin_) == HIGH)
         {
-            find_tube_center();
-
             is_found_home = true;
-            motor_.pos = 0;
             break;
         }
-
-        //delay(1);
     }
 
     motor_.disable();
 
     if (is_found_home)
     {
+        find_tube_center();
         #ifdef DEBUG
         Serial.println("First tube found.");
         #endif // ! DEBUG
@@ -197,17 +190,54 @@ bool Revolver::find_tube_center()
 
     motor_.enable();
 
-    for(int i = 0; i < 10; ++i)
+    for(int i = 0; i < 2200; ++i)
     {
-        if (digitalRead(center_sensor_pin_) == HIGH)
+        motor_.step();
+        motor_.tick();
+
+        if (digitalRead(center_sensor_pin_) == LOW)
         {
             is_found_center = true;
             break;
         }
 
-        motor_.step();
-
         delay(1);
+    }
+
+    if ( ! is_found_center)
+    {
+        motor_.dir *= -1;
+        
+        for(int i = 0; i < 4400; ++i)
+        {
+            motor_.step();
+            motor_.tick();
+            if (digitalRead(center_sensor_pin_) == LOW)
+            {
+            is_found_center = true;
+            break;
+            }
+
+            delay(1);
+        }
+
+        motor_.dir *= -1;
+    }
+
+    if ( ! is_found_center)
+    {   
+        for(int i = 0; i < 2200; ++i)
+        {
+            motor_.step();
+            motor_.tick();
+            if (digitalRead(center_sensor_pin_) == LOW)
+            {
+            is_found_center = true;
+            break;
+            }
+
+            delay(1);
+        }
     }
 
     motor_.disable();
