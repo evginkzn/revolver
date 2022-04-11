@@ -13,6 +13,15 @@
 class Cap
 {
 private:
+    enum Angles
+    {
+        Servo1ClosedAngle = 10,
+        Servo2ClosedAngle = 10,
+
+        Servo1OpenedAngle = 120,
+        Servo2OpenedAngle = 120
+    };
+
     enum State
     {
         StateIdle = 0,

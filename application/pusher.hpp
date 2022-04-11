@@ -13,6 +13,14 @@
 class Pusher
 {
 private:
+    enum Angles
+    {
+        Servo1DefaultAngle = 120,
+        Servo2DefaultAngle = 0,
+        Servo1UpAngle = 0,
+        Servo2PushAngle = 160,
+    };
+
     enum State
     {
         StateIdle = 0,
