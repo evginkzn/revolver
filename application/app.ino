@@ -7,6 +7,7 @@
 #include "revolver.hpp"
 #include "pusher.hpp"
 #include "cap.hpp"
+#include "vendomat.hpp"
 
 #define PIN_ENA 4
 #define PIN_DIR 5
@@ -23,7 +24,7 @@
 #define CAP_FIRST_SERVO_PIN 6
 #define CAP_SECOND_SERVO_PIN 7
 
-static const char version[] = "0.4";
+static const char version[] = "0.5";
 
 GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 
@@ -32,10 +33,13 @@ static Revolver revolver(step_motor, STEP_PER_TURNAROUND
 static Pusher pusher;
 static Cap cap;
 
-static uint8_t tube_target_ = 0;
-static uint8_t current_tube_ = 0;
+static Vendomat vendomat = Vendomat(revolver, pusher, cap);
 
-static bool is_pushed_ = true;
+static char command_buffer[128];
+static uint8_t command_buffer_offset = 0;
+static unsigned long command_rx_timeout = 0;
+
+bool is_calibrated = false;
 
 void setup()
 {
@@ -54,11 +58,7 @@ void setup()
     pusher.init(PUSHER_FIRST_SERVO_PIN, PUSHER_SECOND_SERVO_PIN);
     cap.init(CAP_FIRST_SERVO_PIN, CAP_SECOND_SERVO_PIN);
     revolver.init();
-
-    FunctionSlot<uint8_t> selected_event_slot(tube_selected_event);
-    revolver.attachOnSelectEvent(selected_event_slot);
-
-    FunctionSlot<bool> pushed_event_slot(pushed_event);
+    vendomat.init();
 
     #ifdef DEBUG
     Serial.println("Initialization done\n");
@@ -66,39 +66,38 @@ void setup()
 
 }
 
-uint8_t tubes_selecting_test_targets[12] = { 1,  2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0 };
-unsigned long select_period_counter = 0;
-uint8_t selector = 0;
-
-bool is_calibrated = false;
-
 void loop()
 {
     while ( ! is_calibrated)
     {
         is_calibrated = revolver.find_first_tube();
-
     }
 
-    if (is_pushed_ && ! pusher.in_action())
+    uint32_t bytes_available = Serial.available();
+    if (bytes_available > 0)
     {
-        if (millis() - select_period_counter > 5000)
-        {
-            select_period_counter = millis();
-            if (revolver.state() == Revolver::StateIdle)
-            {
-                is_pushed_ = false;
-                revolver.select_tube(tubes_selecting_test_targets[selector]);
-
-                ++selector;
-                if (selector >= 12)
-                {
-                    selector = 0;
-                }
-            }
-        }
+        Serial.readBytes(command_buffer + command_buffer_offset, bytes_available);
+        command_buffer_offset += bytes_available;
+        command_rx_timeout = millis();
     }
 
+    if ((millis() - command_rx_timeout) > 1000 && command_buffer_offset)
+    {
+        if (strstr(command_buffer, "set tube"))
+        {
+            int tube = atoi(command_buffer + 9);
+            Serial.println("Found command SET_TUBE");
+            Serial.print("Tube: ");
+            Serial.print(tube);
+            Serial.println("");
+
+            vendomat.select_cell(tube);
+        }
+        memset(command_buffer, 0, sizeof(command_buffer));
+        command_buffer_offset = 0;
+    }
+
+    vendomat.tick();
     revolver.tick();
     step_motor.tick();
     pusher.tick();
@@ -113,38 +112,5 @@ void step_motor_configure()
 
     #ifdef DEBUG
     Serial.println("Step motor configured");
-    #endif // ! DEBUG
-}
-
-void tube_selected_event(uint8_t selected_tube)
-{
-    #ifdef DEBUG
-    Serial.print("Tube ");
-    Serial.print(selected_tube);
-    Serial.println(" selected");
-    #endif // ! DEBUG
-
-    cap.open();
-
-    pusher.make_push();
-}
-
-void pushed_event(bool)
-{
-    is_pushed_ = true;
-    cap.close();
-}
-
-void cap_open()
-{
-    #ifdef DEBUG
-    Serial.println("Cap opened");
-    #endif // ! DEBUG
-}
-
-void cap_close()
-{
-    #ifdef DEBUG
-    Serial.println("Cap closed");
     #endif // ! DEBUG
 }

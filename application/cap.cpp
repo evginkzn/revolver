@@ -1,5 +1,7 @@
 #include "cap.hpp"
 
+#define DEBUG
+
 Cap::Cap()
     : in_action_(false)
     , is_opened_(false)
@@ -44,7 +46,7 @@ void Cap::tick()
 
         case StateSecondServoAction:
         {
-            if (millis() - time_counter_ > 500)
+            if (millis() - time_counter_ > 1500)
             {
                 #ifdef DEBUG
                 Serial.println("Cap::Second servo action");
@@ -55,6 +57,7 @@ void Cap::tick()
                 state_ = StateIdle;
                 is_opened_ = true;
                 in_action_ = false;
+                onOpened_.fire(true);
             }
         }
         break;
@@ -72,7 +75,7 @@ void Cap::tick()
 
         case StateFirstServoBack:
         {
-            if (millis() - time_counter_ > 700)
+            if (millis() - time_counter_ > 1700)
             {
                 #ifdef DEBUG
                 Serial.println("Cap::First servo back");
@@ -82,6 +85,7 @@ void Cap::tick()
                 state_ = StateIdle;
                 in_action_ = false;
                 is_opened_ = false;
+                onClosed_.fire(true);
                 #ifdef DEBUG
                 Serial.println("Cap:: closed");
                 #endif // ! DEBUG
