@@ -47,6 +47,10 @@ public:
         onPushed_.attach(slot);
     }
 
+    void set_servo1_default_angle(int angle);
+    void set_servo2_default_angle(int angle);
+    void set_servo1_action_angle(int angle);
+    void set_servo2_action_angle(int angle);
 
 private:
     unsigned long time_counter_;
@@ -58,6 +62,11 @@ private:
 
     Servo servo1_;
     Servo servo2_;
+
+    int servo1_default_angle_;
+    int servo2_default_angle_;
+    int servo1_action_angle_;
+    int servo2_action_angle_;
 };
 
 #endif // ! PUSHER_HPP

@@ -1,11 +1,13 @@
 #include "cap.hpp"
 
-#define DEBUG
-
 Cap::Cap()
     : in_action_(false)
     , is_opened_(false)
     , state_(StateIdle)
+    , servo1_closed_angle_(Servo1ClosedAngle)
+    , servo2_closed_angle_(Servo2ClosedAngle)
+    , servo1_opened_angle_(Servo1OpenedAngle)
+    , servo2_opened_angle_(Servo2OpenedAngle)
 {
 
 }
@@ -38,7 +40,7 @@ void Cap::tick()
             #ifdef DEBUG
             Serial.println("Cap::First servo action");
             #endif // ! DEBUG
-            servo1_.write(Servo1OpenedAngle);
+            servo1_.write(servo1_opened_angle_);
             time_counter_ = millis();
             state_ = StateSecondServoAction;
         }
@@ -52,7 +54,7 @@ void Cap::tick()
                 Serial.println("Cap::Second servo action");
                 Serial.println("Cap:: opened");
                 #endif // ! DEBUG
-                servo2_.write(Servo2OpenedAngle);
+                servo2_.write(servo2_opened_angle_);
                 time_counter_ = millis();
                 state_ = StateIdle;
                 is_opened_ = true;
@@ -67,7 +69,7 @@ void Cap::tick()
             #ifdef DEBUG
             Serial.println("Cap::Second servo back");
             #endif // ! DEBUG
-            servo2_.write(Servo2ClosedAngle);
+            servo2_.write(servo2_closed_angle_);
             time_counter_ = millis();
             state_ = StateFirstServoBack;
         }
@@ -80,7 +82,7 @@ void Cap::tick()
                 #ifdef DEBUG
                 Serial.println("Cap::First servo back");
                 #endif // ! DEBUG
-                servo1_.write(Servo1ClosedAngle);
+                servo1_.write(servo1_closed_angle_);
                 time_counter_ = millis();
                 state_ = StateIdle;
                 in_action_ = false;
@@ -126,4 +128,36 @@ void Cap::close()
 
     in_action_ = true;
     state_ = StateSecondServoBack;
+}
+
+void Cap::set_servo1_closed_angle(int angle)
+{
+    if (angle >= 0 && angle <= 180)
+    {
+        servo1_closed_angle_ = angle;
+    }
+}
+
+void Cap::set_servo2_closed_angle(int angle)
+{
+    if (angle >= 0 && angle <= 180)
+    {
+        servo2_closed_angle_ = angle;
+    }
+}
+
+void Cap::set_servo1_opened_angle(int angle)
+{
+    if (angle >= 0 && angle <= 180)
+    {
+        servo1_opened_angle_ = angle;
+    }
+}
+
+void Cap::set_servo2_opened_angle(int angle)
+{
+    if (angle >= 0 && angle <= 180)
+    {
+        servo2_opened_angle_ = angle;
+    }
 }

@@ -15,10 +15,10 @@ class Cap
 private:
     enum Angles
     {
-        Servo1ClosedAngle = 10,
+        Servo1ClosedAngle = 120,
         Servo2ClosedAngle = 10,
 
-        Servo1OpenedAngle = 120,
+        Servo1OpenedAngle = 10,
         Servo2OpenedAngle = 120
     };
 
@@ -55,6 +55,11 @@ public:
         onClosed_.attach(slot);
     }
 
+    void set_servo1_closed_angle(int angle);
+    void set_servo2_closed_angle(int angle);
+    void set_servo1_opened_angle(int angle);
+    void set_servo2_opened_angle(int angle);
+
 private:
     bool in_action_;
     bool is_opened_;
@@ -68,6 +73,11 @@ private:
 
     Servo servo1_;
     Servo servo2_;
+
+    int servo1_closed_angle_;
+    int servo2_closed_angle_;
+    int servo1_opened_angle_;
+    int servo2_opened_angle_;
 };
 
 #endif // ! CAP_HPP
