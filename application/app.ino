@@ -24,7 +24,7 @@
 #define CAP_FIRST_SERVO_PIN 6
 #define CAP_SECOND_SERVO_PIN 7
 
-static const char version[] = "0.6";
+static const char version[] = "0.7";
 
 GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 

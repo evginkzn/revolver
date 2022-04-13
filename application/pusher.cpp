@@ -86,8 +86,8 @@ void Pusher::tick()
                 in_action_ = false;
                 #ifdef DEBUG
                 Serial.println("Pushed");
-                onPushed_.fire(true);
                 #endif // ! DEBUG
+                onPushed_.fire(true);
             }
         }
         break;

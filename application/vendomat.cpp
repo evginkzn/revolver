@@ -168,7 +168,7 @@ void Vendomat::cap_closing_done(bool done)
 void Vendomat::pushing_done(bool done)
 {
     #ifdef DEBUG
-    Serial.println("Cap closed");
+    Serial.println("Pushing closed");
     #endif // ! DEBUG
 
     stage_delay_counter_ = millis();
