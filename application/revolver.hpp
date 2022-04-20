@@ -29,7 +29,7 @@ public:
     void init();
     void tick();
 
-    void select_tube(uint8_t tube);
+    bool select_tube(uint8_t tube);
 
     State state() const { return state_; }
 

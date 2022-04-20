@@ -130,8 +130,10 @@ void Vendomat::select_cell(uint8_t cell)
         return;
     }
 
-    revolver_.select_tube(cell);
-    stage_ = StageSelectingTube;
+    if (revolver_.select_tube(cell))
+    {
+        stage_ = StageSelectingTube;
+    }
 }
 
 void Vendomat::cell_selecting_done(uint8_t cell)

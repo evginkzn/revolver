@@ -52,11 +52,11 @@ void Revolver::tick()
     }
 }
 
-void Revolver::select_tube(uint8_t tube)
+bool Revolver::select_tube(uint8_t tube)
 {
-    if (current_tube_ == tube || tube > 11)
+    if (tube > 11)
     {
-        return;
+        return false;
     }
 
     #ifdef DEBUG
@@ -137,6 +137,8 @@ void Revolver::select_tube(uint8_t tube)
     motor_.setTarget(need_steps);
 
     state_ = StateSelectingTube;
+
+    return true;
 }
 
 bool Revolver::find_first_tube()
