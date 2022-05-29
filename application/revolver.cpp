@@ -1,6 +1,6 @@
 #include "revolver.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 Revolver::Revolver(GStepper2<STEPPER2WIRE>& motor, uint16_t steps
             , int first_tube_sensor_pin, int center_sensor_pin)
@@ -148,6 +148,8 @@ bool Revolver::find_first_tube()
     #ifdef DEBUG
     Serial.println("Start finding first tube...");
     #endif // ! DEBUG
+
+    return true;
 
     motor_.enable();
 

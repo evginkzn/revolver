@@ -2,8 +2,9 @@
 
 #include "Callback.h"
 
-#define DEBUG
+//#define DEBUG
 
+#ifdef DEBUG
 static const char stages_strings[7][22] = 
                                     {
                                         "Stand By             ",
@@ -14,6 +15,7 @@ static const char stages_strings[7][22] =
                                         "Waiting End Operation",
                                         "Closing Cap          "
                                     };
+#endif
 
 Vendomat::Vendomat(Revolver& revolver, Pusher& pusher, Cap& cap)
     : revolver_(revolver)
