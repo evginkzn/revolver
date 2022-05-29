@@ -7,9 +7,12 @@ static uint16_t address = 0;
 
 static uint16_t map_[ModbusReceiver::AddressMap::Length];
 
+static ModbusReceiver* instance_ = 0;
+
 ModbusReceiver::ModbusReceiver()
     : modbus_slave_instance_(Serial, buffer_, BufferSize)
 {
+    ::instance_ = this;
     address = DefaultAddress;
 }
 
@@ -71,6 +74,7 @@ static bool hold_reg_write_(uint16_t address, uint16_t value)
         break;
 
         case ModbusReceiver::AddressMap::Command:
+            ::instance_->onCommandReceived_.fire(value);
         break;
         
         default:

@@ -50,12 +50,14 @@ public:
 
     uint16_t selectedTube();
 
+public:
+    Signal<uint16_t> onCommandReceived_;
+
 private:
     uint8_t buffer_[BufferSize];
 
     ModbusRTUSlave modbus_slave_instance_;
 
-    Signal<uint16_t> onCommandReceived_;
 };
 
 #endif // ! MODBUS_RECEIVER_HPP
