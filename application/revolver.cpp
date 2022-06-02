@@ -1,6 +1,6 @@
 #include "revolver.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 Revolver::Revolver(GStepper2<STEPPER2WIRE>& motor, uint16_t steps
             , int first_tube_sensor_pin, int center_sensor_pin)
