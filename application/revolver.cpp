@@ -149,8 +149,6 @@ bool Revolver::find_first_tube()
     Serial.println("Start finding first tube...");
     #endif // ! DEBUG
 
-    return true;
-
     motor_.enable();
 
     while(1)

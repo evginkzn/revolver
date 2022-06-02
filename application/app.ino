@@ -31,7 +31,7 @@ typedef enum
     CommandStart = 1
 } commands_e;
 
-static const char version[] = "0.9";
+static const char version[] = "1.0";
 
 GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 
@@ -61,6 +61,12 @@ void setup()
     #endif // ! DEBUG
 
     modbus_receiver.init();
+
+    /*while(1)
+    {
+        modbus_receiver.poll();
+    }
+    */
 
     step_motor_configure();
 

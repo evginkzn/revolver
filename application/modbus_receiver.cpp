@@ -48,8 +48,6 @@ static int32_t hold_reg_read_(uint16_t address)
 {
     if (address < ModbusReceiver::AddressMap::Length)
     {
-        ++map_[address];
-        
         return map_[address];
     }
     else return 0;
