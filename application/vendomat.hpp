@@ -27,6 +27,14 @@ public:
     StageRevolverCalibrating,
   };
 
+  enum Mode
+  {
+    ModeMain = 0,
+    ModeService,
+    
+    ModesCount
+  };
+
 public:
   Vendomat(Revolver& revolver, Pusher& pusher, Cap& cap);
   ~Vendomat(){}
@@ -38,6 +46,9 @@ public:
   void select_cell(uint8_t cell);
 
   Stage stage() const { return stage_; }
+  Mode mode() const { return mode_; }
+
+  bool set_mode(Mode mode);
 
 private:
   void cell_selecting_done(uint8_t cell);
@@ -53,6 +64,8 @@ private:
     Stage stage_;
 
     unsigned long stage_delay_counter_;
+
+    Mode mode_;
 };
 
 #endif // ! VENDOMAT_HPP

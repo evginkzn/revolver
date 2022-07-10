@@ -1,6 +1,9 @@
 #include "vendomat.hpp"
 
 #include "Callback.h"
+#include "vendomat_mode_base.hpp"
+#include "vendomat_mode_main.hpp"
+#include "vendomat_mode_service.hpp"
 
 //#define DEBUG
 
@@ -17,16 +20,27 @@ static const char stages_strings[7][22] =
                                     };
 #endif
 
+static VendomatModeMain mode_main_;
+static VendomatModeService mode_service_;
+
+static VendomatModeBase* mode_instance_[Vendomat::ModesCount];
+
 Vendomat::Vendomat(Revolver& revolver, Pusher& pusher, Cap& cap)
     : revolver_(revolver)
     , pusher_(pusher)
     , cap_(cap)
+    , mode_(ModeMain)
 {
 
 }
 
 void Vendomat::init()
 {
+    mode_instance_[ModeMain] = &mode_main_;
+    mode_instance_[ModeService] = &mode_service_;
+
+    mode_instance_[mode_]->init();
+
     MethodSlot<Vendomat, uint8_t> selected_event_slot(this, &Vendomat::cell_selecting_done);
     revolver_.attachOnSelectEvent(selected_event_slot);
 
@@ -44,6 +58,9 @@ void Vendomat::init()
 
 void Vendomat::tick()
 {
+    /*
+    mode_instance_[mode_]->tick();
+    */
     switch (stage_)
     {
         case StageStandBy:
@@ -136,6 +153,23 @@ void Vendomat::select_cell(uint8_t cell)
     {
         stage_ = StageSelectingTube;
     }
+}
+
+bool Vendomat::set_mode(Mode mode)
+{
+    if (stage_ != StageStandBy)
+    {
+        return false;
+    }
+
+    if (mode_ == mode)
+    {
+        return true;
+    }
+
+    mode_instance_[mode_]->deinit();
+    mode_ = mode;
+    mode_instance_[mode_]->init();
 }
 
 void Vendomat::cell_selecting_done(uint8_t cell)
