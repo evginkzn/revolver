@@ -47,6 +47,11 @@ public:
         onPushed_.attach(slot);
     }
 
+    void detachOnPushedEvent(const Slot<bool>& slot)
+    {
+        onPushed_.detach(slot);
+    }
+
     void set_servo1_default_angle(int angle);
     void set_servo2_default_angle(int angle);
     void set_servo1_action_angle(int angle);

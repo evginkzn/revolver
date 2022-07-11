@@ -11,22 +11,13 @@
 #include "pusher.hpp"
 #include "cap.hpp"
 
+#include "vendomat_mode_base.hpp"
+#include "vendomat_mode_main.hpp"
+#include "vendomat_mode_service.hpp"
+
 class Vendomat
 {
 public:
-  enum Stage
-  {
-    StageStandBy = 0,
-    StageSelectingTube,
-    StageWaitingOwenOpening,
-    StageOpeningCap,
-    StagePushing,
-    StageWaitingEndOperation,
-    StageClosingCap,
-
-    StageRevolverCalibrating,
-  };
-
   enum Mode
   {
     ModeMain = 0,
@@ -36,36 +27,23 @@ public:
   };
 
 public:
-  Vendomat(Revolver& revolver, Pusher& pusher, Cap& cap);
+  Vendomat(Revolver* revolver, Pusher* pusher, Cap* cap);
   ~Vendomat(){}
 
 public:
   void init();
   void tick();
 
-  void select_cell(uint8_t cell);
+  bool select_cell(uint8_t cell);
 
-  Stage stage() const { return stage_; }
   Mode mode() const { return mode_; }
 
   bool set_mode(Mode mode);
 
-private:
-  void cell_selecting_done(uint8_t cell);
-  void cap_opening_done(bool done);
-  void cap_closing_done(bool done);
-  void pushing_done(bool done);
+  uint8_t stage() const;
 
 private:
-    Revolver& revolver_;
-    Pusher& pusher_;
-    Cap& cap_;
-
-    Stage stage_;
-
-    unsigned long stage_delay_counter_;
-
-    Mode mode_;
+  Mode mode_;
 };
 
 #endif // ! VENDOMAT_HPP

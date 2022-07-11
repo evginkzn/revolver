@@ -38,6 +38,11 @@ public:
         onSelect_.attach(slot);
     }
 
+    void detachOnSelectEvent(const Slot<uint8_t>& slot)
+    {
+        onSelect_.detach(slot);
+    }
+
     bool find_first_tube();
 
 private:

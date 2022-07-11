@@ -6,15 +6,18 @@
 class VendomatModeService : public VendomatModeBase
 {
 public:
-    VendomatModeService();
+    VendomatModeService(Revolver* revolver);
+    VendomatModeService(){}
     ~VendomatModeService(){};
 
 public:
-    void init();
-    void deinit();
+    void init() override;
+    void deinit() override;
 
-    void tick();
+    void tick() override;
 
+private:
+    Revolver* revolver_;
 };
 
 #endif // ! VENDOMAT_MODE_SERVICE_HPP

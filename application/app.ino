@@ -40,7 +40,7 @@ static Revolver revolver(step_motor, STEP_PER_TURNAROUND
 static Pusher pusher;
 static Cap cap;
 
-static Vendomat vendomat = Vendomat(revolver, pusher, cap);
+static Vendomat vendomat = Vendomat(&revolver, &pusher, &cap);
 
 static ModbusReceiver modbus_receiver;
 
@@ -116,7 +116,7 @@ static void onCommandRecevedEventHandler(uint16_t command)
 {
     if (command == CommandStart)
     {
-        if (vendomat.stage() == Vendomat::Stage::StageStandBy)
+        if (vendomat.stage() == VendomatModeMain::Stage::StageStandBy)
         {
             vendomat.select_cell(modbus_receiver.selectedTube());
         }

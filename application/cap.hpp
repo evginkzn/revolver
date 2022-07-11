@@ -50,9 +50,19 @@ public:
         onOpened_.attach(slot);
     }
 
+    void detachOnOpenedEvent(const Slot<bool>& slot)
+    {
+        onOpened_.detach(slot);
+    }
+
     void attachOnClosedEvent(const Slot<bool>& slot)
     {
         onClosed_.attach(slot);
+    }
+
+    void detachOnClosedEvent(const Slot<bool>& slot)
+    {
+        onClosed_.detach(slot);
     }
 
     void set_servo1_closed_angle(int angle);
