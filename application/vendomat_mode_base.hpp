@@ -8,7 +8,7 @@
 class VendomatModeBase
 {
 public:
-    VendomatModeBase();
+    VendomatModeBase(){}
     ~VendomatModeBase(){}
 
 public:
