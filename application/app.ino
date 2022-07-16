@@ -92,6 +92,7 @@ void loop()
     step_motor.tick();
     pusher.tick();
     cap.tick();
+    service_door.tick();
 
     modbus_receiver.updateStateHandler(vendomat.stage());
 }
