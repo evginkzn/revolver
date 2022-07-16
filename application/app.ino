@@ -1,6 +1,8 @@
 #define DRIVER_STEP_TIME 10  // меняем задержку на 10 мкс
 //#define DEBUG
 
+#include "config.hpp"
+
 #include "GyverStepper2.h"
 #include "Callback.h"
 #include "ModbusRTUSlave.h"
@@ -9,29 +11,15 @@
 #include "pusher.hpp"
 #include "cap.hpp"
 #include "vendomat.hpp"
+#include "service_door.hpp"
 #include "modbus_receiver.hpp"
-
-#define PIN_ENA 4
-#define PIN_DIR 5
-#define PIN_PUL 11
-
-#define STEP_PER_TURNAROUND 3200
-
-#define FIRST_TUBE_SENSOR_PIN 8
-#define TUBE_CENTER_SENSOR_PIN 9
-
-#define PUSHER_FIRST_SERVO_PIN 2
-#define PUSHER_SECOND_SERVO_PIN 3
-
-#define CAP_FIRST_SERVO_PIN 6
-#define CAP_SECOND_SERVO_PIN 7
 
 typedef enum
 {
     CommandStart = 1
 } commands_e;
 
-static const char version[] = "1.0";
+static const char version[] = "1.1";
 
 GStepper2<STEPPER2WIRE> step_motor(STEP_PER_TURNAROUND, PIN_PUL, PIN_DIR, PIN_ENA);
 
@@ -41,6 +29,7 @@ static Pusher pusher;
 static Cap cap;
 
 static Vendomat vendomat = Vendomat(&revolver, &pusher, &cap);
+static ServiceDoor service_door = ServiceDoor(SERVICE_DOOR_SENSOR_PIN, false);
 
 static ModbusReceiver modbus_receiver;
 
@@ -77,6 +66,12 @@ void setup()
 
     FunctionSlot<uint16_t> onCommandReceivedSlot(onCommandRecevedEventHandler);
     modbus_receiver.attachOnCommandReceivedEvent(onCommandReceivedSlot);
+
+    FunctionSlot<bool> onServiceDoorOpenedSlot(onServiceDoorOpenedHandler);
+    service_door.attachOnOpenedEvent(onServiceDoorOpenedSlot);
+
+    FunctionSlot<bool> onServiceDoorClosedSlot(onServiceDoorClosedHandler);
+    service_door.attachOnClosedEvent(onServiceDoorClosedSlot);
 
     #ifdef DEBUG
     Serial.println("Initialization done\n");
@@ -121,4 +116,30 @@ static void onCommandRecevedEventHandler(uint16_t command)
             vendomat.select_cell(modbus_receiver.selectedTube());
         }
     }
+}
+
+static void onServiceDoorOpenedHandler(bool)
+{
+    uint32_t timeout_counter;
+    while(vendomat.stage() != VendomatModeMain::Stage::StageStandBy)
+    {
+        ++timeout_counter;
+        if (timeout_counter >= 0xFFFFFF)
+        {
+            break;
+        }
+    }
+    vendomat.set_mode(Vendomat::ModeService);
+    #ifdef DEBUG
+    Serial.println("Service door opened");
+    #endif // ! DEBUG
+}
+
+static void onServiceDoorClosedHandler(bool)
+{
+    vendomat.set_mode(Vendomat::ModeMain);
+    is_calibrated = false;
+    #ifdef DEBUG
+    Serial.println("Service door closed");
+    #endif // ! DEBUG
 }
