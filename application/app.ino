@@ -6,6 +6,7 @@
 #include "GyverStepper2.h"
 #include "Callback.h"
 #include "ModbusRTUSlave.h"
+#include "Button2.h"
 
 #include "revolver.hpp"
 #include "pusher.hpp"
@@ -32,6 +33,9 @@ static Vendomat vendomat = Vendomat(&revolver, &pusher, &cap);
 static ServiceDoor service_door = ServiceDoor(SERVICE_DOOR_SENSOR_PIN, false);
 
 static ModbusReceiver modbus_receiver;
+
+static Button2 service_left_button;
+static Button2 service_right_button;
 
 bool is_calibrated = false;
 
@@ -73,6 +77,9 @@ void setup()
     FunctionSlot<bool> onServiceDoorClosedSlot(onServiceDoorClosedHandler);
     service_door.attachOnClosedEvent(onServiceDoorClosedSlot);
 
+    service_left_button.setClickHandler();
+    service_right_button.setClickHandler();
+
     #ifdef DEBUG
     Serial.println("Initialization done\n");
     #endif // ! DEBUG
@@ -92,7 +99,7 @@ void loop()
     step_motor.tick();
     pusher.tick();
     cap.tick();
-    service_door.tick();
+    service_door.tick();    
 
     modbus_receiver.updateStateHandler(vendomat.stage());
 }

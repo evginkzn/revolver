@@ -43,6 +43,9 @@ public:
     }
 
 private:
+    bool pin_state();
+
+private:
     bool isOpened_;
     bool opened_state_;
     unsigned long debounceTimeCounter_;

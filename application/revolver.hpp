@@ -45,6 +45,8 @@ public:
 
     bool find_first_tube();
 
+    uint8_t get_current_tube() const { current_tube_; }
+
 private:
     bool find_tube_center();
 
