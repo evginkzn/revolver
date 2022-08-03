@@ -28,7 +28,6 @@ public:
     void tick() override;
 
 private:
-    uint8_t calculate_need_tube();
     void cell_selecting_done(uint8_t cell);
 
 private:

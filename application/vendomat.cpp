@@ -21,11 +21,12 @@ static VendomatModeService mode_service_;
 
 static VendomatModeBase* mode_instance_[Vendomat::ModesCount];
 
-Vendomat::Vendomat(Revolver* revolver, Pusher* pusher, Cap* cap)
+Vendomat::Vendomat(Revolver* revolver, Pusher* pusher, Cap* cap, Button2* left_btn, Button2* right_btn)
     : mode_(ModeMain)
 {
     mode_main_ = VendomatModeMain(revolver, pusher, cap);
     mode_instance_[ModeMain] = &mode_main_;
+    mode_service_ = VendomatModeService(revolver, left_btn, right_btn);
     mode_instance_[ModeService] = &mode_service_;
 }
 

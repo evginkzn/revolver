@@ -18,7 +18,7 @@ public:
 public:
     void init();
 
-    bool is_opened() const { return is_opened; }
+    bool is_opened() const { return isOpened_; }
 
     void tick();
 

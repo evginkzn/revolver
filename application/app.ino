@@ -1,5 +1,4 @@
 #define DRIVER_STEP_TIME 10  // меняем задержку на 10 мкс
-//#define DEBUG
 
 #include "config.hpp"
 
@@ -15,6 +14,8 @@
 #include "service_door.hpp"
 #include "modbus_receiver.hpp"
 
+//#define DEBUG
+
 typedef enum
 {
     CommandStart = 1
@@ -29,17 +30,20 @@ static Revolver revolver(step_motor, STEP_PER_TURNAROUND
 static Pusher pusher;
 static Cap cap;
 
-static Vendomat vendomat = Vendomat(&revolver, &pusher, &cap);
+static Button2 service_left_button;
+static Button2 service_right_button;
+
+static Vendomat vendomat = Vendomat(&revolver, &pusher, &cap, &service_left_button, &service_right_button);
 static ServiceDoor service_door = ServiceDoor(SERVICE_DOOR_SENSOR_PIN, false);
 
 static ModbusReceiver modbus_receiver;
 
-static Button2 service_left_button;
-static Button2 service_right_button;
 
 bool is_calibrated = false;
 
 static void onCommandRecevedEventHandler(uint16_t command);
+
+void foor(Button2& btn) { Serial.println("foo"); }
 
 void setup()
 {
@@ -53,7 +57,7 @@ void setup()
     Serial.println("");
     #endif // ! DEBUG
 
-    modbus_receiver.init();
+    //modbus_receiver.init();
 
     /*while(1)
     {
@@ -63,9 +67,13 @@ void setup()
 
     step_motor_configure();
 
+    service_left_button.begin(SERVICE_LEFT_ROTATE_BUTTON);
+    service_right_button.begin(SERVICE_RIGHT_ROTATE_BUTTON);
+
     pusher.init(PUSHER_FIRST_SERVO_PIN, PUSHER_SECOND_SERVO_PIN);
     cap.init(CAP_FIRST_SERVO_PIN, CAP_SECOND_SERVO_PIN);
     revolver.init();
+    vendomat.set_mode(Vendomat::ModeMain);
     vendomat.init();
 
     FunctionSlot<uint16_t> onCommandReceivedSlot(onCommandRecevedEventHandler);
@@ -77,12 +85,9 @@ void setup()
     FunctionSlot<bool> onServiceDoorClosedSlot(onServiceDoorClosedHandler);
     service_door.attachOnClosedEvent(onServiceDoorClosedSlot);
 
-    service_left_button.setClickHandler();
-    service_right_button.setClickHandler();
-
     #ifdef DEBUG
     Serial.println("Initialization done\n");
-    #endif // ! DEBUG
+    #endif
 }
 
 void loop()
@@ -92,7 +97,7 @@ void loop()
         is_calibrated = revolver.find_first_tube();
     }
 
-    modbus_receiver.poll();
+    //modbus_receiver.poll();
 
     vendomat.tick();
     revolver.tick();
@@ -101,13 +106,16 @@ void loop()
     cap.tick();
     service_door.tick();    
 
-    modbus_receiver.updateStateHandler(vendomat.stage());
+    //modbus_receiver.updateStateHandler(vendomat.stage());
+
+    service_left_button.loop();
+    service_right_button.loop();
 }
 
 void step_motor_configure()
 {
-    step_motor.setMaxSpeed(12000);
-    step_motor.setAcceleration(9000);
+    step_motor.setMaxSpeed(10000);
+    step_motor.setAcceleration(4000);
     step_motor.invertEn(true);
 
     #ifdef DEBUG

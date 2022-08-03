@@ -15,6 +15,8 @@
 #include "vendomat_mode_main.hpp"
 #include "vendomat_mode_service.hpp"
 
+#include "Button2.h"
+
 class Vendomat
 {
 public:
@@ -27,7 +29,7 @@ public:
   };
 
 public:
-  Vendomat(Revolver* revolver, Pusher* pusher, Cap* cap);
+  Vendomat(Revolver* revolver, Pusher* pusher, Cap* cap, Button2* left_btn, Button2* right_btn);
   ~Vendomat(){}
 
 public:

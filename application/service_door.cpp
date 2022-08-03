@@ -15,7 +15,7 @@ void ServiceDoor::tick()
 {
     if (pin_state() == opened_state_)
     {
-        if (is_opened)
+        if (isOpened_)
         {
             debounceTimeCounter_ = millis();
         }
@@ -23,22 +23,24 @@ void ServiceDoor::tick()
         {
             if (millis() - debounceTimeCounter_ >= 2000)
             {
-                onClosed_.fire(false);
+                isOpened_ = true;
+                onOpened_.fire(isOpened_);
             }
         }
     }
     else
     {
-        if (is_opened)
+        if (!isOpened_)
         {
-            if (millis() - debounceTimeCounter_ >= 2000)
-            {
-                onOpened_.fire(false);
-            }
+            debounceTimeCounter_ = millis();
         }
         else
         {
-            debounceTimeCounter_ = millis();
+            if (millis() - debounceTimeCounter_ >= 2000)
+            {
+                isOpened_ = false;
+                onClosed_.fire(isOpened_);
+            }
         }
     }
 }
